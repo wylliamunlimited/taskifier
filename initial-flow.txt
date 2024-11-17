@@ -1,0 +1,80 @@
+---
+title: Intelligent Guiding Boi
+---
+stateDiagram-v2
+    query: Task Query
+    supertask: Super Task
+    Breakdown: Dissect Task & User Approach
+    query --> Breakdown
+
+    State Breakdown {
+        userStyle: Decision Style Prediction
+        supertask --> userStyle
+        note left of userStyle
+            Supervised model analyzing past behavioral decision
+        end note
+
+        userStyle --> styleDissect
+
+        styleDissect: User Personal Approach & Preference Analysis 
+        State styleDissect {
+            pastApproaches: Past Subtask ordering with Task Data
+            priority: Priority
+            diffPref: Start with hard or easy task first 
+            pastApproaches --> priority
+            pastApproaches --> diffPref
+            %% more to be added
+        }
+
+        taskUnderstand: Task Information Retrieval
+        supertask --> taskUnderstand
+        note right of taskUnderstand
+            Search for queried task details
+        end note
+
+        taskUnderstand --> taskAnalysis
+
+        taskAnalysis: Task Analysis
+        State taskAnalysis {
+            taskInfo: Task Information (optional ==> multiple approaches for choosing)
+            timeFact: Expected Time Consumption
+            diffFact: Level of difficulty
+            taskInfo --> timeFact
+            taskInfo --> diffFact
+            %% more to be added
+        }
+
+        unifier: Summarizing Preferences & Tasks
+        taskAnalysis --> unifier
+        styleDissect --> unifier
+
+        result: Brief Subtask Workflow Sequence
+        unifier --> result
+    }
+
+    scheduling: Put Sequence Onto Calendar
+    Breakdown --> scheduling
+
+    llmGeneration: LLM Generated Finalized Workflow
+    Breakdown --> llmGeneration
+
+    State Pivot {
+        userConfirm: User Agree with Workflow Suggestion (Explicit Confirmation)
+        llmGeneration --> userConfirm
+
+
+        userConfirm --> scheduling: long term task
+        scheduling --> ongoingConvo
+
+        ongoingConvo: Wait for User's question
+        clarification: LLM generated response to clarify the question
+        userConfirm --> ongoingConvo: short term task
+        ongoingConvo --> clarification
+        clarification --> ongoingConvo
+
+    }
+
+    dataRecord: Record User's Pivoting Result to Refine Approach Analysis in the future
+    Pivot --> dataRecord
+
+

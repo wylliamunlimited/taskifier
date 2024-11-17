@@ -1,0 +1,30 @@
+---
+title: Taskifier
+---
+flowchart LR 
+    %% query: Task Query
+    %% ap_anal: Approach Analysis
+    %% hist: Work History AND/OR Behavioral Summarization
+
+    A{Task Query} --Data Retrieval--> DB[(Work History AND/OR Behavioral Summarization)]
+    subgraph Approach Analysis
+    DB --Ingestion--> B{{LLM Qualitative Behavioral Analysis}}
+    B --> C[Style Summarization]
+    end
+    A --> D[Web Search for Task Information]
+    subgraph Tavily Web Search
+    D
+    end 
+    D --> E[LLM Generated Task Breakdown and Explanation]
+    C --> E
+
+    E --> F{User's demand for adjustment}
+    subgraph Optional
+    F --> G[LLM Regeneration]
+    G --Not Satisfied--> F
+    end
+    G --Satisfied--> H[Finalization of Plan]
+    H --Store At--> DB
+    H --Discretization of Plan--> I[Upload Each Task as a Event to Any Calendar, e.g. Google Calendar]
+    H --> J[Response]
+
